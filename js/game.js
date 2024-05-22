@@ -8,8 +8,8 @@ var gGame
 var gLevel = {
     SIZE: 4,
     MINES: 2,
-    LIVES: 2,
-    MAX_LIVES: 2,
+    LIVES: 1,
+    MAX_LIVES: 1,
 }
 var gTimer = null
 var gBoard
@@ -22,16 +22,25 @@ function onInit() {
         shownCount: 0,
         markedCount: 0,
         secsPassed: 0,
-        firstClick: false,
+        firstClick: true,
     }
     closeModal()
-    const elLives = document.querySelector(`.lives`)
-    elLives.innerText = gLevel.LIVES
+    resetText()
     gBoard = buildBoard()
     renderBoard(gBoard)
     setMinesNegsCount()
 }
 
+function resetText() {
+    var elSpanShown = document.querySelector('.shownCounter')
+    elSpanShown.innerText = gGame.shownCount
+    var elSpanMarked = document.querySelector('.markedCounter')
+    elSpanMarked.innerText = gGame.markedCount
+    var elBtn = document.querySelector('.restart-btn')
+    elBtn.innerText = '😀'
+    const elLives = document.querySelector(`.lives`)
+    elLives.innerText = gLevel.LIVES
+}
 
 function buildBoard() {
     const board = []
@@ -104,54 +113,85 @@ function setMinesNegsCount() {
 
 function checkGameOver() {
     if (gLevel.LIVES === 0) {
+        showMines()
+        updateShownCounter()
         clearInterval(gTimer)
         gTimer = null
         gGame.isOn = false
         var msg = 'Game Over'
         openModal(msg)
-        var elBtn = document.querySelector('.start-btn')
+        var elBtn = document.querySelector('.restart-btn')
         elBtn.innerText = '🤯'
     } else if (checkVictory()) {
+        updateShownCounter()
         clearInterval(gTimer)
         gTimer = null
         gGame.isOn = false
         var msg = 'Victrious!'
         openModal(msg)
-        var elBtn = document.querySelector('.start-btn')
+        var elBtn = document.querySelector('.restart-btn')
         elBtn.innerText = '😎'
     }
 }
 
 function handleClick(elClick) {
+    if (!gGame.isOn) return;
     var location = getCellLocationFromClick(elClick)
-    if (!gGame.firstClick) {
-        gGame.firstClick = true
+    if (gGame.firstClick) {
+        gGame.firstClick = false
         gTimer = setInterval(renderTimer, 1000)
         setRandomMines()
         setMinesNegsCount()
         renderMineNegs(location)
+        updateShownCounter()
     }
 
     const elCell = document.querySelector(`.cell-${location.i}-${location.j}`)
+    elCell.classList.replace('hidden', 'revelead')
     gBoard[location.i][location.j].isShown = true
     if (gBoard[location.i][location.j].isFlagged) return;
-    if (gBoard[location.i][location.j].isMine) {
 
-        handleMines(elCell)
+    if (gBoard[location.i][location.j].isMine) {
+        handleMine(elCell)
         renderCell(location, MINE)
+        updateShownCounter()
         return;
     }
-    elCell.classList.replace('hidden', 'revelead')
+
     if (!gBoard[location.i][location.j].minesAroundCount) {
         renderMineNegs(location)
-    } else renderCell(location, gBoard[location.i][location.j].minesAroundCount)
+    } else {
+        renderCell(location, gBoard[location.i][location.j].minesAroundCount)
+        updateShownCounter()
+    }
+
+    //if (gBoard[location.i][location.j].isShown) return;
+    gBoard[location.i][location.j].isShown = true
+    updateShownCounter()
     checkGameOver()
+    updateShownCounter()
+}
+
+function updateShownCounter() {
+    var counter = 0
+    for (var i = 0; i < gLevel.SIZE; i++) {
+        for (var j = 0; j < gLevel.SIZE; j++) {
+            // Find all mines first
+            if (gBoard[i][j].isShown) {
+                counter++
+            }
+
+        }
+    }
+    gGame.shownCount = counter
+    var elSpanShown = document.querySelector('.shownCounter')
+    elSpanShown.innerText = gGame.shownCount
 }
 
 
-function handleMines(elCell) {
+function handleMine(elCell) {
     const elLives = document.querySelector(`.lives`)
-    var elBtn = document.querySelector('.start-btn')
+    var elBtn = document.querySelector('.restart-btn')
     elBtn.innerText = '🤯'
     gLevel.LIVES--
     elLives.innerText = gLevel.LIVES
@@ -161,6 +201,7 @@ function handleMines(elCell) {
 
 function renderMineNegs(location) {
     var near = findNearBy(location.i, location.j)
+
     for (var i = 0; i < near.length; i++) {
         var loc = {
             i: near[i].i,
@@ -172,24 +213,29 @@ function renderMineNegs(location) {
             cell.classList.replace('hidden', 'revelead')
             renderCell(loc, EMPTY)
         }
-        if (gBoard[near[i].i][near[i].j].minesAroundCount) renderCell(loc, gBoard[near[i].i][near[i].j].minesAroundCount)
+        if (gBoard[near[i].i][near[i].j].minesAroundCount) return renderCell(loc, gBoard[near[i].i][near[i].j].minesAroundCount)
     }
 }
 
 //Finished Flagged Logic(Handling Left click without having context menu inside the table)
 function handleFlag(elClick) {
+    if (!gGame.isOn) return;
     var location = getCellLocationFromClick(elClick)
     var isFlagged = gBoard[location.i][location.j].isFlagged
     const elCell = document.querySelector(`.cell-${location.i}-${location.j}`)
     if (isFlagged) {
+        gGame.markedCount--
         gBoard[location.i][location.j].isFlagged = false
         elCell.classList.replace('flagged', 'hidden')
         renderCell(location, EMPTY)
     } else {
+        gGame.markedCount++
         gBoard[location.i][location.j].isFlagged = true
         elCell.classList.replace('hidden', 'flagged')
         renderCell(location, FLAG)
     }
+    var elSpanMarked = document.querySelector('.markedCounter')
+    elSpanMarked.innerText = gGame.markedCount
 }
 //Finished Flagged Logic
 
@@ -232,6 +278,7 @@ function pad(val) {
 }
 
 function resetTimer() {
+    clearInterval(gTimer)
     gTimer = null
     var elSpanSec = document.querySelector(".seconds");
     var elSpanMin = document.querySelector(".minutes");
@@ -249,8 +296,8 @@ function handleDiffculty(difficulty) {
         gLevel = {
             SIZE: 4,
             MINES: 2,
-            LIVES: 2,
-            MAX_LIVES: 2,
+            LIVES: 1,
+            MAX_LIVES: 1,
         }
     } else if (difficulty === 'Medium') {
         gLevel = {
@@ -270,8 +317,6 @@ function handleDiffculty(difficulty) {
     onInit()
 }
 
-
-
 // Check Victory?
 
 function checkVictory() {
@@ -283,4 +328,28 @@ function checkVictory() {
         }
     }
     return true;
+
+}
+
+
+//Show the Mines on Death 
+
+function showMines() {
+    for (var i = 0; i < gLevel.SIZE; i++) {
+        for (var j = 0; j < gLevel.SIZE; j++) {
+            // Find all mines first
+            if (gBoard[i][j].isMine) {
+                var location = {
+                    i: i,
+                    j: j
+                }
+                // Update Their cell value
+                gBoard[i][j].isShown = true
+                renderCell(location, MINE)
+                var cell = document.querySelector(`.cell-${location.i}-${location.j}`)
+                cell.classList.replace('hidden', 'revelead')
+            }
+
+        }
+    }
 }

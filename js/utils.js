@@ -89,7 +89,7 @@ function getEmptyLocation(board) {
     for (var i = 0; i < board.length; i++) {
         for (var j = 0; j < board[i].length; j++) {
             const currCell = board[i][j];
-            if (currCell.isMine === false || currCell.isShown === true) {
+            if (currCell.isMine === false && currCell.isShown === false) {
                 emptyLocations.push({
                     i,
                     j
@@ -142,4 +142,22 @@ function getCellLocationFromClick(elClick) {
         j: elClick.target.className.split('-')[2]
     }
     return location
+}
+
+var gDarkMode = false
+
+function darkModeEnable() {
+    if (!gDarkMode) {
+        gDarkMode = !gDarkMode
+        var elBody = document.querySelector('body')
+        var elTable = document.querySelector('table')
+        elBody.classList.remove('dark-mode')
+        elTable.classList.remove('table-dark')
+    } else {
+        gDarkMode = !gDarkMode
+        var elBody = document.querySelector('body')
+        var elTable = document.querySelector('table')
+        elBody.classList.add('dark-mode')
+        elTable.classList.add('table-dark')
+    }
 }
