@@ -5,17 +5,17 @@ const EMPTY = ' '
 const FLAG = '🚩'
 
 var gGame
-
 var gLevel = {
     SIZE: 4,
     MINES: 2,
     LIVES: 2,
+    MAX_LIVES: 2,
 }
-
 var gTimer = null
 var gBoard
 
 function onInit() {
+    gLevel.LIVES = gLevel.MAX_LIVES
     resetTimer()
     gGame = {
         isOn: true,
@@ -111,19 +111,18 @@ function checkGameOver() {
         openModal(msg)
         var elBtn = document.querySelector('.start-btn')
         elBtn.innerText = '🤯'
-    } else if (checkVictory) {
+    } else if (checkVictory()) {
         clearInterval(gTimer)
         gTimer = null
         gGame.isOn = false
         var msg = 'Victrious!'
-        //openModal(msg)
+        openModal(msg)
         var elBtn = document.querySelector('.start-btn')
         elBtn.innerText = '😎'
     }
 }
 
 function handleClick(elClick) {
-    checkGameOver()
     var location = getCellLocationFromClick(elClick)
     if (!gGame.firstClick) {
         gGame.firstClick = true
@@ -132,6 +131,7 @@ function handleClick(elClick) {
         setMinesNegsCount()
         renderMineNegs(location)
     }
+
     const elCell = document.querySelector(`.cell-${location.i}-${location.j}`)
     gBoard[location.i][location.j].isShown = true
     if (gBoard[location.i][location.j].isFlagged) return;
@@ -145,6 +145,7 @@ function handleClick(elClick) {
     if (!gBoard[location.i][location.j].minesAroundCount) {
         renderMineNegs(location)
     } else renderCell(location, gBoard[location.i][location.j].minesAroundCount)
+    checkGameOver()
 }
 
 
@@ -244,45 +245,42 @@ function resetTimer() {
 
 
 function handleDiffculty(difficulty) {
-    gDiffculty = difficulty
-    switch (difficulty) {
-        case 'Easy':
-            gLevel = {
-                SIZE: 4,
-                MINES: 2,
-                LIVES: 2,
-            }
-            break;
-        case 'Medium':
-            gLevel = {
-                SIZE: 8,
-                MINES: 14,
-                LIVES: 3,
-            }
-            break;
-        case 'Hard':
-            gLevel = {
-                SIZE: 12,
-                MINES: 32,
-                LIVES: 3,
-            }
-            break;
+    if (difficulty === 'Easy') {
+        gLevel = {
+            SIZE: 4,
+            MINES: 2,
+            LIVES: 2,
+            MAX_LIVES: 2,
+        }
+    } else if (difficulty === 'Medium') {
+        gLevel = {
+            SIZE: 8,
+            MINES: 14,
+            LIVES: 3,
+            MAX_LIVES: 3,
+        }
+    } else if (difficulty === 'Hard') {
+        gLevel = {
+            SIZE: 12,
+            MINES: 32,
+            LIVES: 3,
+            MAX_LIVES: 3,
+        }
     }
+    onInit()
 }
 
 
 
 // Check Victory?
 
-function checkVictory(){
+function checkVictory() {
     for (var i = 0; i < gLevel.SIZE; i++) {
         for (var j = 0; j < gLevel.SIZE; j++) {
-            if(!gBoard[i][j].isShown && !gBoard.isMine) {
-                console.log('False')
-                return false  
+            if (!gBoard[i][j].isShown && !gBoard[i][j].isMine) {
+                return false
             }
         }
     }
-    console.log('true')
     return true;
 }
