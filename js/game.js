@@ -13,6 +13,8 @@ var gLevel = {
 }
 var gTimer = null
 var gBoard
+var gVictors = []
+var gDiffculty = 'Easy'
 
 function onInit() {
     gLevel.LIVES = gLevel.MAX_LIVES
@@ -33,13 +35,13 @@ function onInit() {
 
 function resetText() {
     var elSpanShown = document.querySelector('.shownCounter')
-    elSpanShown.innerText = gGame.shownCount
+    elSpanShown.innerText = ` ${gGame.shownCount}`
     var elSpanMarked = document.querySelector('.markedCounter')
-    elSpanMarked.innerText = gGame.markedCount
+    elSpanMarked.innerText = ` ${gGame.markedCount}`
     var elBtn = document.querySelector('.restart-btn')
     elBtn.innerText = '😀'
     const elLives = document.querySelector(`.lives`)
-    elLives.innerText = gLevel.LIVES
+    elLives.innerText = ` ${gLevel.LIVES}`
 }
 
 function buildBoard() {
@@ -129,16 +131,33 @@ function checkGameOver() {
         openModal(msg)
         var elBtn = document.querySelector('.restart-btn')
         elBtn.innerText = '😎'
-        if (typeof (Storage) !== "undefined") {
-            if (sessionStorage.secsPassed) {
-                sessionStorage.secsPassed = gGame.secsPassed;
-            } else {
-                sessionStorage.secsPassed = gGame.secsPassed;
-            }
-            document.querySelector('.leaderboard').innerHTML += `<tr class="leaderboardtr"><th class="leaderboardth">1</th><td class="leaderboardtd">Swiftwind</td><td class="leaderboardtd">${gGame.secsPassed}</td></tr>`;
+        var name = prompt('Enter your name')
+        loadLeaderboard(name)
+    }
+}
+
+function loadLeaderboard(name) {
+    var victor = {
+        name: name,
+        score: gGame.secsPassed,
+        difficulty: gDiffculty,
+    }
+    var strHTML = ''
+    if(name) gVictors.push(victor)
+    if (typeof (Storage) !== "undefined") {
+        if (sessionStorage.secsPassed) {
+            sessionStorage.secsPassed = gGame.secsPassed;
         } else {
-            document.querySelector('.leaderboard').innerHTML = "Sorry, your browser does not support web storage...";
+            sessionStorage.secsPassed = gGame.secsPassed;
         }
+        for (var i = 0; i < gVictors.length; i++) {
+            strHTML += '<tr class="leaderboardtr">'
+            strHTML += `<th class="leaderboardth">${i+1}</th><td class="leaderboardtd">${gVictors[i].name}</td><td class="leaderboardtd">${gVictors[i].score}</td>`;
+            strHTML += '</tr>'
+        }
+        document.querySelector('.leaderboardbody').innerHTML = strHTML
+    } else {
+        document.querySelector('.leaderboardbody').innerHTML = "Sorry, your browser does not support web storage...";
     }
 }
 
@@ -299,6 +318,7 @@ function resetTimer() {
 
 
 function handleDiffculty(difficulty) {
+    gDiffculty = difficulty
     if (difficulty === 'Easy') {
         gLevel = {
             SIZE: 4,

@@ -147,7 +147,7 @@ function getCellLocationFromClick(elClick) {
 var gDarkMode = false
 
 function darkModeEnable() {
-    if (gDarkMode) {
+    if (!gDarkMode) {
         var elBody = document.querySelector('body')
         var elTable = document.querySelector('table')
         elBody.classList.add('dark-mode')

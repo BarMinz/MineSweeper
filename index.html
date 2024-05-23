@@ -15,14 +15,16 @@
       <button onclick="handleDiffculty('Medium')">Medium</button>
       <button onclick="handleDiffculty('Hard')">Hard</button>
     </div>
-    <h1>
-      Timer: <span class="minutes"></span><span class="seconds"></span>,
-      Lives:<span class="lives"> </span> , Shown Counter:<span
-        class="shownCounter"
-      >
-      </span
-      >, Marked Counter: <span class="markedCounter"> </span>
-    </h1>
+    <div>
+      <h1>
+        Timer: <span class="minutes"></span><span class="seconds"></span>,
+        Lives:<span class="lives"> </span> , Shown Counter:<span
+          class="shownCounter"
+        >
+        </span
+        >, Marked Counter: <span class="markedCounter"> </span>
+      </h1>
+    </div>
     <table class="board" oncontextmenu="return false;"></table>
     <div class="modal">
       <h3 class="msg"></h3>
@@ -36,12 +38,13 @@
         <tr class="leaderboardtr">
           <th class="leaderboardth">Rank</th>
           <th class="leaderboardth">Player</th>
-          <th class="leaderboardth">Seconds</th>
+          <th class="leaderboardth">Score</th>
         </tr>
       </thead>
+      <tbody class="leaderboardbody"></tbody>
     </table>
     <div class="footer">
-      Michael Spiridonov @ Mine Sweeper 2024(Half works :())
+      Michael Spiridonov @ Mine Sweeper 2024
     </div>
   </body>
 </html>
