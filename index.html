@@ -16,8 +16,12 @@
       <button onclick="handleDiffculty('Hard')">Hard</button>
     </div>
     <h1>
-      Timer: <span class="minutes"></span><span class="seconds"></span>, Lives:<span class="lives"> </span>
-      , Shown Counter:<span class="shownCounter"> </span>, Marked Counter: <span class="markedCounter"> </span>
+      Timer: <span class="minutes"></span><span class="seconds"></span>,
+      Lives:<span class="lives"> </span> , Shown Counter:<span
+        class="shownCounter"
+      >
+      </span
+      >, Marked Counter: <span class="markedCounter"> </span>
     </h1>
     <table class="board" oncontextmenu="return false;"></table>
     <div class="modal">
@@ -26,7 +30,18 @@
     </div>
     <script src="js/utils.js"></script>
     <script src="js/game.js"></script>
-
-    <div class="footer">Michael Spiridonov @ Mine Sweeper 2024(Half works :())</div>
+    <div id="result"></div>
+    <table class="leaderboard">
+      <thead>
+        <tr class="leaderboardtr">
+          <th class="leaderboardth">Rank</th>
+          <th class="leaderboardth">Player</th>
+          <th class="leaderboardth">Seconds</th>
+        </tr>
+      </thead>
+    </table>
+    <div class="footer">
+      Michael Spiridonov @ Mine Sweeper 2024(Half works :())
+    </div>
   </body>
 </html>

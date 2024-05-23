@@ -147,17 +147,17 @@ function getCellLocationFromClick(elClick) {
 var gDarkMode = false
 
 function darkModeEnable() {
-    if (!gDarkMode) {
-        gDarkMode = !gDarkMode
-        var elBody = document.querySelector('body')
-        var elTable = document.querySelector('table')
-        elBody.classList.remove('dark-mode')
-        elTable.classList.remove('table-dark')
-    } else {
-        gDarkMode = !gDarkMode
+    if (gDarkMode) {
         var elBody = document.querySelector('body')
         var elTable = document.querySelector('table')
         elBody.classList.add('dark-mode')
         elTable.classList.add('table-dark')
+        gDarkMode = !gDarkMode
+    } else {
+        var elBody = document.querySelector('body')
+        var elTable = document.querySelector('.board')
+        elBody.classList.remove('dark-mode')
+        elTable.classList.remove('table-dark')
+        gDarkMode = !gDarkMode
     }
 }

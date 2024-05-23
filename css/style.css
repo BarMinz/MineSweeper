@@ -16,7 +16,9 @@ body {
 
 .footer {
     margin: 30px;
-    font-size: 40px;
+    font-size: 24px;
+    position: absolute;
+    bottom: 0;
 }
 
 td {
@@ -64,4 +66,51 @@ td {
 .table-dark {
     background-color: white;
     color: black;
+}
+
+
+.leaderboard {
+    width: 25%;
+    /* Adjust width as needed */
+    border-collapse: collapse;
+    margin: auto;
+    margin-top: 50px;
+    color: #000000;
+}
+
+.leaderboardth,
+.leaderboardtd {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.leaderboardth {
+    background-color: #eee;
+}
+
+/* Optional styling for rank column */
+.rank {
+    width: 25px;
+    text-align: center;
+    border: 1px solid #000000;
+}
+
+/* Highlight top 3 positions */
+.leaderboardtr:nth-child(1) th,
+.leaderboardtr:nth-child(1) td {
+    background-color: #ffd700;
+    /* Gold */
+}
+
+.leaderboardtr:nth-child(2) th,
+.leaderboardtr:nth-child(2) td {
+    background-color: #c0c0c0;
+    /* Silver */
+}
+
+.leaderboardtr:nth-child(3) th,
+.leaderboardtr:nth-child(3) td {
+    background-color: #cd7f32;
+    /* Bronze */
 }

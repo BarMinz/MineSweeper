@@ -53,8 +53,8 @@ function buildBoard() {
         }
     }
 
-    // board[0][3].isMine = true
-    // board[1][1].isMine = true
+    board[0][3].isMine = true
+    board[1][1].isMine = true
     console.log('board:', board)
     return board
 }
@@ -106,7 +106,7 @@ function setMinesNegsCount() {
         for (var j = 0; j < gLevel.SIZE; j++) {
             var counter = countNeighbors(i, j)
             if (counter === 0) continue
-            else gBoard[i][j].minesAroundCount++
+            else gBoard[i][j].minesAroundCount = counter
         }
     }
 }
@@ -114,7 +114,6 @@ function setMinesNegsCount() {
 function checkGameOver() {
     if (gLevel.LIVES === 0) {
         showMines()
-        updateShownCounter()
         clearInterval(gTimer)
         gTimer = null
         gGame.isOn = false
@@ -123,7 +122,6 @@ function checkGameOver() {
         var elBtn = document.querySelector('.restart-btn')
         elBtn.innerText = '🤯'
     } else if (checkVictory()) {
-        updateShownCounter()
         clearInterval(gTimer)
         gTimer = null
         gGame.isOn = false
@@ -131,6 +129,16 @@ function checkGameOver() {
         openModal(msg)
         var elBtn = document.querySelector('.restart-btn')
         elBtn.innerText = '😎'
+        if (typeof (Storage) !== "undefined") {
+            if (sessionStorage.secsPassed) {
+                sessionStorage.secsPassed = gGame.secsPassed;
+            } else {
+                sessionStorage.secsPassed = gGame.secsPassed;
+            }
+            document.querySelector('.leaderboard').innerHTML += `<tr class="leaderboardtr"><th class="leaderboardth">1</th><td class="leaderboardtd">Swiftwind</td><td class="leaderboardtd">${gGame.secsPassed}</td></tr>`;
+        } else {
+            document.querySelector('.leaderboard').innerHTML = "Sorry, your browser does not support web storage...";
+        }
     }
 }
 
@@ -140,7 +148,7 @@ function handleClick(elClick) {
     if (gGame.firstClick) {
         gGame.firstClick = false
         gTimer = setInterval(renderTimer, 1000)
-        setRandomMines()
+        //setRandomMines()
         setMinesNegsCount()
         renderMineNegs(location)
         updateShownCounter()
@@ -164,11 +172,9 @@ function handleClick(elClick) {
         renderCell(location, gBoard[location.i][location.j].minesAroundCount)
         updateShownCounter()
     }
-
-    //if (gBoard[location.i][location.j].isShown) return;
-    gBoard[location.i][location.j].isShown = true
-    updateShownCounter()
     checkGameOver()
+    if (!gBoard[location.i][location.j].isShown) return;
+    gBoard[location.i][location.j].isShown = true
     updateShownCounter()
 }
 
@@ -200,8 +206,9 @@ function handleMine(elCell) {
 }
 
 function renderMineNegs(location) {
+    if (location.i < 0 || location.i >= gBoard.length) return;
+    if (location.j < 0 || location.j >= gBoard[0].length) return;
     var near = findNearBy(location.i, location.j)
-
     for (var i = 0; i < near.length; i++) {
         var loc = {
             i: near[i].i,
@@ -322,7 +329,7 @@ function handleDiffculty(difficulty) {
 function checkVictory() {
     for (var i = 0; i < gLevel.SIZE; i++) {
         for (var j = 0; j < gLevel.SIZE; j++) {
-            if (!gBoard[i][j].isShown && !gBoard[i][j].isMine) {
+            if (!gBoard[i][j].isMine && !gBoard[i][j].isShown) {
                 return false
             }
         }
