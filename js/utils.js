@@ -125,11 +125,13 @@ function findNearBy(cellI, cellJ) {
         if (i < 0 || i >= gBoard.length) continue
         for (var j = cellJ - 1; j <= cellJ + 1; j++) {
             if (j < 0 || j >= gBoard[i].length) continue
-            if (i === cellI && j === cellJ) continue
-            if (!gBoard[i][j].isMine && !gBoard[i][j].isShown) neighborsArr.push({
-                i: i,
-                j: j
-            })
+            //if (i === cellI && j === cellJ) continue
+            if (!gBoard[i][j].isMine && !gBoard[i][j].isShown) {
+                neighborsArr.push({
+                    i: i,
+                    j: j
+                })
+            }
         }
     }
     return neighborsArr
@@ -150,14 +152,18 @@ function darkModeEnable() {
     if (!gDarkMode) {
         var elBody = document.querySelector('body')
         var elTable = document.querySelector('table')
+        var elDiv = document.querySelector('.hint-container')
         elBody.classList.add('dark-mode')
         elTable.classList.add('table-dark')
+        elDiv.classList.add('darkhint-container')
         gDarkMode = !gDarkMode
     } else {
         var elBody = document.querySelector('body')
         var elTable = document.querySelector('.board')
+        var elDiv = document.querySelector('.hint-container')
         elBody.classList.remove('dark-mode')
         elTable.classList.remove('table-dark')
+        elDiv.classList.remove('darkhint-container')
         gDarkMode = !gDarkMode
     }
 }

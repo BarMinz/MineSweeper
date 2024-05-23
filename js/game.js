@@ -25,15 +25,17 @@ function onInit() {
         markedCount: 0,
         secsPassed: 0,
         firstClick: true,
+        isClickHint: false,
     }
     closeModal()
-    resetText()
+    resetElements()
     gBoard = buildBoard()
     renderBoard(gBoard)
     setMinesNegsCount()
+    loadLeaderboard()
 }
 
-function resetText() {
+function resetElements() {
     var elSpanShown = document.querySelector('.shownCounter')
     elSpanShown.innerText = ` ${gGame.shownCount}`
     var elSpanMarked = document.querySelector('.markedCounter')
@@ -42,6 +44,8 @@ function resetText() {
     elBtn.innerText = '😀'
     const elLives = document.querySelector(`.lives`)
     elLives.innerText = ` ${gLevel.LIVES}`
+    var elBtn = document.querySelector('.hint-container button')
+    elBtn.style.visibility = 'visible'
 }
 
 function buildBoard() {
@@ -55,8 +59,8 @@ function buildBoard() {
         }
     }
 
-    board[0][3].isMine = true
-    board[1][1].isMine = true
+    //board[0][3].isMine = true
+    //board[1][1].isMine = true
     console.log('board:', board)
     return board
 }
@@ -137,13 +141,15 @@ function checkGameOver() {
 }
 
 function loadLeaderboard(name) {
+    var rank = 0
     var victor = {
         name: name,
         score: gGame.secsPassed,
         difficulty: gDiffculty,
     }
     var strHTML = ''
-    if(name) gVictors.push(victor)
+    if (name) gVictors.push(victor)
+    gVictors.sort((a, b) => a.score - b.score)
     if (typeof (Storage) !== "undefined") {
         if (sessionStorage.secsPassed) {
             sessionStorage.secsPassed = gGame.secsPassed;
@@ -151,9 +157,12 @@ function loadLeaderboard(name) {
             sessionStorage.secsPassed = gGame.secsPassed;
         }
         for (var i = 0; i < gVictors.length; i++) {
-            strHTML += '<tr class="leaderboardtr">'
-            strHTML += `<th class="leaderboardth">${i+1}</th><td class="leaderboardtd">${gVictors[i].name}</td><td class="leaderboardtd">${gVictors[i].score}</td>`;
-            strHTML += '</tr>'
+            if (gVictors[i].difficulty === gDiffculty) {
+                rank++
+                strHTML += '<tr class="leaderboardtr">'
+                strHTML += `<th class="leaderboardth">${rank}</th><td class="leaderboardtd">${gVictors[i].name}</td><td class="leaderboardtd">${gVictors[i].score}</td><td class="leaderboardtd">${gVictors[i].difficulty}</td>`;
+                strHTML += '</tr>'
+            } else continue
         }
         document.querySelector('.leaderboardbody').innerHTML = strHTML
     } else {
@@ -167,10 +176,22 @@ function handleClick(elClick) {
     if (gGame.firstClick) {
         gGame.firstClick = false
         gTimer = setInterval(renderTimer, 1000)
-        //setRandomMines()
+        gBoard[location.i][location.j].isShown = true
+        const elCell = document.querySelector(`.cell-${location.i}-${location.j}`)
+        elCell.classList.replace('hidden', 'revelead')
+        setRandomMines()
         setMinesNegsCount()
         renderMineNegs(location)
         updateShownCounter()
+        return
+    }
+    if (gGame.isClickHint) {
+        gGame.isClickHint = false
+        revealNegs(location.i, location.j)
+        setTimeout(() => {
+            hideNegs(location.i, location.j)
+        }, 1000)
+        return;
     }
 
     const elCell = document.querySelector(`.cell-${location.i}-${location.j}`)
@@ -193,7 +214,6 @@ function handleClick(elClick) {
     }
     checkGameOver()
     if (!gBoard[location.i][location.j].isShown) return;
-    gBoard[location.i][location.j].isShown = true
     updateShownCounter()
 }
 
@@ -239,7 +259,7 @@ function renderMineNegs(location) {
             cell.classList.replace('hidden', 'revelead')
             renderCell(loc, EMPTY)
         }
-        if (gBoard[near[i].i][near[i].j].minesAroundCount) return renderCell(loc, gBoard[near[i].i][near[i].j].minesAroundCount)
+        if (gBoard[near[i].i][near[i].j].minesAroundCount) renderCell(loc, gBoard[near[i].i][near[i].j].minesAroundCount)
     }
 }
 
@@ -377,6 +397,58 @@ function showMines() {
                 cell.classList.replace('hidden', 'revelead')
             }
 
+        }
+    }
+}
+
+// Handle Hints 
+
+function handleHint(elBtn) {
+    if (gGame.firstClick) return
+    elBtn.style.visibility = 'hidden'
+    // Implement change background color of button to yellow 
+    gGame.isClickHint = true
+
+}
+
+
+function revealNegs(cellI, cellJ) {
+    for (var i = cellI - 1; i <= cellI + 1; i++) {
+        if (i < 0 || i >= gBoard.length) continue
+        for (var j = cellJ - 1; j <= cellJ + 1; j++) {
+            if (j < 0 || j >= gBoard[0].length) continue
+            var elCell = document.querySelector(`.cell-${i}-${j}`)
+            if (elCell.classList[0] === 'revelead') continue
+            elCell.classList.replace('hidden', 'revelead')
+            if (gBoard[i][j].minesAroundCount) renderCell({
+                i: i,
+                j: j
+            }, gBoard[i][j].minesAroundCount)
+        }
+    }
+}
+
+function hideNegs(cellI, cellJ) {
+    for (var i = cellI - 1; i <= cellI + 1; i++) {
+        if (i < 0 || i >= gBoard.length) continue
+        for (var j = cellJ - 1; j <= cellJ + 1; j++) {
+            if (j < 0 || j >= gBoard[i].length) continue
+            var elCell = document.querySelector(`.cell-${i}-${j}`)
+
+            if (gBoard[i][j].minesAroundCount && !gBoard[i][j].isShown) {
+                elCell.classList.replace('revelead', 'hidden')
+                renderCell({
+                    i: i,
+                    j: j
+                }, EMPTY)
+            }
+            if(!gBoard[i][j].isShown) {
+                elCell.classList.replace('revelead', 'hidden')
+                renderCell({
+                    i: i,
+                    j: j
+                }, EMPTY)
+            }
         }
     }
 }

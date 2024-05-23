@@ -14,7 +14,7 @@ h1 span{
 
 .restart-btn {
     padding: 10px;
-    font-size: 20px;
+    font-size: 30px;
     border-radius: 10px;
     margin: 20px;
 }
@@ -25,8 +25,8 @@ h1 span{
 }
 
 td {
-    width: 55px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     border: 2px solid black;
     text-align: center;
     cursor: pointer;
@@ -116,4 +116,20 @@ td {
 .leaderboardtr:nth-child(3) td {
     background-color: #cd7f32;
     /* Bronze */
+}
+
+.hint-container button{
+    height: 15px;
+    margin: 5px;
+    background-color: white;
+    border: solid white;
+    font-size: 50px;
+}
+
+.darkhint-container button{
+    height: 20px;
+    margin: 5px;
+    background-color: rgb(0, 0, 0);
+    border: solid rgb(0, 0, 0);
+    font-size: 50px;
 }

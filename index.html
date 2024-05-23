@@ -15,6 +15,11 @@
       <button onclick="handleDiffculty('Medium')">Medium</button>
       <button onclick="handleDiffculty('Hard')">Hard</button>
     </div>
+    <div class="hint-container">
+      <button onclick="handleHint(this)">💡</button>
+      <button onclick="handleHint(this)">💡</button>
+      <button onclick="handleHint(this)">💡</button>
+    </div>
     <div>
       <h1>
         Timer: <span class="minutes"></span><span class="seconds"></span>,
@@ -39,6 +44,7 @@
           <th class="leaderboardth">Rank</th>
           <th class="leaderboardth">Player</th>
           <th class="leaderboardth">Score</th>
+          <th class="leaderboardth">Diffculty</th>
         </tr>
       </thead>
       <tbody class="leaderboardbody"></tbody>
