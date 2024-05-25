@@ -15,10 +15,11 @@ var gTimer = null
 var gBoard
 var gVictors = []
 var gDiffculty = 'Easy'
+var gSafeCountCounter = 3
+var gMegaHitCount = 0
 
 function onInit() {
     gLevel.LIVES = gLevel.MAX_LIVES
-    resetTimer()
     gGame = {
         isOn: true,
         shownCount: 0,
@@ -26,25 +27,31 @@ function onInit() {
         secsPassed: 0,
         firstClick: true,
         isClickHint: false,
+        isMegaHit: false,
+        megaHitCells: [],
     }
-    closeModal()
+    gMegaHitCount = 0
+    resetTimer()
     resetElements()
     gBoard = buildBoard()
     renderBoard(gBoard)
     setMinesNegsCount()
     loadLeaderboard()
+    closeModal()
 }
 
 function resetElements() {
-    var elSpanShown = document.querySelector('.shownCounter')
+    var elSpanShown = document.querySelector('.shown-counter')
     elSpanShown.innerText = ` ${gGame.shownCount}`
-    var elSpanMarked = document.querySelector('.markedCounter')
+    var elSpanMarked = document.querySelector('.marked-counter')
     elSpanMarked.innerText = ` ${gGame.markedCount}`
     var elBtn = document.querySelector('.restart-btn')
     elBtn.innerText = '😀'
     const elLives = document.querySelector(`.lives`)
     elLives.innerText = ` ${gLevel.LIVES}`
     var elBtn = document.querySelector('.hint-container button')
+    elBtn.style.visibility = 'visible'
+    var elBtn = document.querySelector(".exterminate")
     elBtn.style.visibility = 'visible'
 }
 
@@ -194,6 +201,10 @@ function handleClick(elClick) {
         return;
     }
 
+    if (gGame.MegaHit && gGame.megaHitCount !== 2) {
+
+    }
+
     const elCell = document.querySelector(`.cell-${location.i}-${location.j}`)
     elCell.classList.replace('hidden', 'revelead')
     gBoard[location.i][location.j].isShown = true
@@ -229,7 +240,7 @@ function updateShownCounter() {
         }
     }
     gGame.shownCount = counter
-    var elSpanShown = document.querySelector('.shownCounter')
+    var elSpanShown = document.querySelector('.shown-counter')
     elSpanShown.innerText = gGame.shownCount
 }
 
@@ -280,7 +291,7 @@ function handleFlag(elClick) {
         elCell.classList.replace('hidden', 'flagged')
         renderCell(location, FLAG)
     }
-    var elSpanMarked = document.querySelector('.markedCounter')
+    var elSpanMarked = document.querySelector('.marked-counter')
     elSpanMarked.innerText = gGame.markedCount
 }
 //Finished Flagged Logic
@@ -442,7 +453,7 @@ function hideNegs(cellI, cellJ) {
                     j: j
                 }, EMPTY)
             }
-            if(!gBoard[i][j].isShown) {
+            if (!gBoard[i][j].isShown) {
                 elCell.classList.replace('revelead', 'hidden')
                 renderCell({
                     i: i,
@@ -451,4 +462,72 @@ function hideNegs(cellI, cellJ) {
             }
         }
     }
+}
+// End of hints
+
+
+// Safe click implementation
+
+function handleSafeClick() {
+    var elBtn = document.querySelector('.safe-click')
+    if (gSafeCountCounter === 0) {
+        elBtn.innerText = `Safe Click, Clicks remaining: ${gSafeCountCounter}`
+        return;
+    }
+    const randomIdx = getRandomIntInclusive(0, gBoard.length - 1)
+    const randomJdx = getRandomIntInclusive(0, gBoard.length - 1)
+    if (!gBoard[randomIdx][randomJdx].isMine && !gBoard[randomIdx][randomJdx].isShown) {
+        gSafeCountCounter--
+        elBtn.innerText = `Safe Click, Clicks remaining: ${gSafeCountCounter}`
+        var location = {
+            i: randomIdx,
+            j: randomJdx
+        }
+        if (gBoard[randomIdx][randomJdx].minesAroundCount) renderCell(location, gBoard[randomIdx][randomJdx].minesAroundCount)
+        else renderCell(location, EMPTY)
+        var cell = document.querySelector(`.cell-${location.i}-${location.j}`)
+        console.log(cell)
+        cell.classList.replace('hidden', 'revelead')
+        setTimeout(() => {
+            cell.classList.replace('revelead', 'hidden')
+            renderCell(location, EMPTY)
+        }, 3000)
+    } else handleSafeClick()
+}
+
+// End of Safe Click
+
+
+// Start of MegaHit
+function handleMegaHit() {
+    gGame.isMegaHit = true
+    for (var i = rowIdxStart; i <= rowIdxEnd; i++) {
+        for (var j = colIdxStart; j <= colIdxEnd; j++) {
+            if (gBoard[rowIdxStart][colIdxStart].minesAroundCount) renderCell(location, gBoard[rowIdxStart][colIdxStar].minesAroundCount)
+            else if (gBoard[rowIdxStart][colIdxStart].isMine) renderCell(location, MINE)
+            else renderCell(location, EMPTY)
+            var cell = document.querySelector(`.cell-${rowIdxStart}-${colIdxStart}`)
+            cell.classList.replace('hidden', 'revelead')
+            setTimeout(() => {
+                cell.classList.replace('revelead', 'hidden')
+                renderCell(location, EMPTY)
+            }, 3000)
+        }
+    }
+}
+
+
+
+// Mine Exterminator
+
+
+function handleExterminate() {
+    if (gDiffculty === 'Easy' || gGame.firstClick) return;
+    for (var i = 0; i < 3; i++) {
+        var mine = getRandomMineLocation(gBoard)
+        gBoard[mine.i][mine.j].isMine = false
+    }
+    setMinesNegsCount()
+    var elBtn = document.querySelector(".exterminate")
+    elBtn.style.visibility = 'hidden'
 }

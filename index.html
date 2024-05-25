@@ -21,13 +21,18 @@
       <button onclick="handleHint(this)">💡</button>
     </div>
     <div>
+      <button class="safe-click" onclick="handleSafeClick(this)">Safe Click Clicks Remaning: 3</button>
+      <button class="exterminate" onclick="handleExterminate(this)">Exterminate</button>
+      <button class="mega-hit" onclick="handleMegaHit(this)">Mega Hit</button>
+    </div>
+    <div>
       <h1>
         Timer: <span class="minutes"></span><span class="seconds"></span>,
         Lives:<span class="lives"> </span> , Shown Counter:<span
-          class="shownCounter"
+          class="shown-counter"
         >
         </span
-        >, Marked Counter: <span class="markedCounter"> </span>
+        >, Marked Counter: <span class="marked-counter"> </span>
       </h1>
     </div>
     <table class="board" oncontextmenu="return false;"></table>
@@ -49,8 +54,6 @@
       </thead>
       <tbody class="leaderboardbody"></tbody>
     </table>
-    <div class="footer">
-      Michael Spiridonov @ Mine Sweeper 2024
-    </div>
+    <footer class="footer">Michael Spiridonov @ Mine Sweeper 2024</footer>
   </body>
 </html>

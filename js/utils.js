@@ -104,6 +104,27 @@ function getEmptyLocation(board) {
     return emptyLocations[randomIdx]
 }
 
+function getRandomMineLocation(board) {
+    const MineLocations = []
+
+    for (var i = 0; i < board.length; i++) {
+        for (var j = 0; j < board[i].length; j++) {
+            const currCell = board[i][j];
+            if (currCell.isMine === true && currCell.isShown === false) {
+                MineLocations.push({
+                    i,
+                    j
+                })
+            }
+        }
+    }
+
+    if (!MineLocations.length) return null
+
+    const randomIdx = getRandomIntInclusive(0, MineLocations.length - 1)
+    return MineLocations[randomIdx]
+}
+
 
 function countNeighbors(cellI, cellJ) {
     var neighborsCount = 0
