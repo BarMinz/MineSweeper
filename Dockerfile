@@ -1,17 +1,19 @@
 FROM nginx:stable-alpine3.19
 
+# Create necessary directories and set permissions
+RUN mkdir -p /var/cache/nginx/client_temp \
+    && chown -R nginx:nginx /var/cache/nginx
+
 # Copy nginx configuration and static files
 COPY nginx.conf /etc/nginx/conf.d/
-COPY css /var/www/html/
-COPY js /var/www/html/
+COPY css /var/www/html/css/
+COPY js /var/www/html/js/
 COPY index.html /var/www/html/
 
 # Create appuser and switch to it
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-# Adjust ownership of copied files
-RUN chown -R appuser:appgroup /etc/nginx/conf.d /var/www/html
-RUN chmod -R 755 /var/www/html
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
+    && chown -R appuser:appgroup /etc/nginx/conf.d /var/www/html \
+    && chmod -R 755 /var/www/html
 
 # Healthcheck command
 HEALTHCHECK CMD curl --fail http://localhost:80 || exit 1
