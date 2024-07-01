@@ -69,4 +69,4 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           directory: '.'
-          framework: Dockerfile 
+          framework: dockerfile 
