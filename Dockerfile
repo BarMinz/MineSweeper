@@ -1,4 +1,4 @@
-FROM ubuntu/nginx:1.18-20.04_beta
+FROM nginx:stable-alpine3.19
 
 # Copy nginx configuration and static files
 COPY nginx.conf /etc/nginx/conf.d/
