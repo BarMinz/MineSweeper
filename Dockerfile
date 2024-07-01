@@ -7,7 +7,7 @@ COPY js /var/www/html/
 COPY index.html /var/www/html/
 
 # Create appuser and switch to it
-RUN useradd -m appuser
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Adjust ownership of copied files
 RUN chown -R appuser:appuser /etc/nginx/conf.d /var/www/html
