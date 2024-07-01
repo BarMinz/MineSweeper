@@ -11,7 +11,6 @@ COPY js /var/www/html/js/
 COPY index.html /var/www/html/
 
 # Create appuser and switch to it
-RUN usermod -a -G users www-data
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
     && chown -R root:www-data /var/www/html \
     && chmod -R 755 /var/www/html
