@@ -6,3 +6,5 @@ COPY index.html /var/www/html/
 
 RUN useradd -m appuser
 USER appuser
+
+HEALTHCHECK CMD curl --fail http://localhost:80 || exit 1
