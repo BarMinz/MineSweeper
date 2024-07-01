@@ -12,7 +12,7 @@ COPY index.html /var/www/html/
 
 # Create appuser and switch to it
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup \
-    && chown -R appuser:appgroup /etc/nginx/conf.d /var/www/html \
+    && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
 # Healthcheck command
