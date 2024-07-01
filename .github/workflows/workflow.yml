@@ -5,6 +5,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  tag: $(git rev-parse --short "$GITHUB_SHA")
+  
 jobs:
   dependancy-scan:
     runs-on: ubuntu-latest
@@ -65,3 +68,30 @@ jobs:
         with:
           directory: '.'
           framework: dockerfile 
+
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [dependancy-scan, docker-scan, static-code-analysis]
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Build the Docker image
+        run: docker build -t barminz/minesweeper:${{ env.TAG }} .
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Push current version
+        run: docker push barminz/minesweeper:${{ env.TAG }}
+
+      - name: Tag latest
+        run: docker tag barminz/minesweeper:${{ env.TAG }} barminz/minesweeper:latest
+
+      - name: Push latest
+        run: docker push barminz/minesweeper:latest
