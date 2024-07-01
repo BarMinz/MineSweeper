@@ -1,8 +1,8 @@
 FROM nginx:stable-alpine3.19
 
 # Create necessary directories and set permissions
-RUN mkdir -p /var/cache/nginx \
-    && chown -R nginx:nginx /var/cache/nginx
+RUN mkdir -p /var/cache/nginx 
+RUN chown -R nginx:nginx /var/cache/nginx
 
 # Copy nginx configuration and static files
 COPY nginx.conf /etc/nginx/conf.d/default.conf
