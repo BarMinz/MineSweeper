@@ -5,7 +5,7 @@ RUN mkdir -p /var/cache/nginx/client_temp \
     && chown -R nginx:nginx /var/cache/nginx
 
 # Copy nginx configuration and static files
-COPY nginx.conf /etc/nginx/conf.d/
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY css /var/www/html/css/
 COPY js /var/www/html/js/
 COPY index.html /var/www/html/
