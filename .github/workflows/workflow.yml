@@ -6,7 +6,7 @@ on:
     branches: [ "main" ]
 
 env:
-  tag: $(git rev-parse --short "$GITHUB_SHA")
+  TAG: $(git rev-parse --short "$GITHUB_SHA")
   
 jobs:
   dependancy-scan:
@@ -32,6 +32,13 @@ jobs:
         with:
           sarif_file: reports/dependency-check-report.sarif
 
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: 'Finished dependency scanning.'
+
   static-code-analysis:
     name: Codacy Analysis CLI
     runs-on: ubuntu-latest
@@ -56,6 +63,13 @@ jobs:
         with:
           sarif_file: results.sarif
 
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: 'Finished static code analysis.'
+
   docker-scan:
     runs-on: ubuntu-latest
     steps:
@@ -67,7 +81,14 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           directory: '.'
-          framework: dockerfile 
+          framework: dockerfile
+      
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: 'Finished docker scanning.'
 
 
   build:
@@ -95,3 +116,10 @@ jobs:
 
       - name: Push latest
         run: docker push barminz/minesweeper:latest
+
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: 'Finished build.'
