@@ -1,4 +1,4 @@
-FROM nginx:stable-alpine3.19-slim
+FROM ubuntu/nginx:1.18-20.04_beta
 COPY nginx.conf /etc/nginx/conf.d/
 COPY css /var/www/html/
 COPY js /var/www/html/
