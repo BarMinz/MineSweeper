@@ -1,7 +1,7 @@
 FROM nginx:stable-alpine3.19
 
 # Create necessary directories and set permissions
-RUN mkdir -p /var/cache/nginx/client_temp \
+RUN mkdir -p /var/cache/nginx \
     && chown -R nginx:nginx /var/cache/nginx
 
 # Copy nginx configuration and static files
