@@ -10,7 +10,7 @@ COPY index.html /var/www/html/
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Adjust ownership of copied files
-RUN chown -R appuser:appuser /etc/nginx/conf.d /var/www/html
+RUN chown -R appuser:appgroup /etc/nginx/conf.d /var/www/html
 RUN chmod -R 755 /var/www/html
 
 # Healthcheck command
